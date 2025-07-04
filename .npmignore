@@ -1,1 +1,8 @@
 .parcel-cache
+coverage
+node_modules
+.idea
+tests
+.git
+.gitignore
+src
