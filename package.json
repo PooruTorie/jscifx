@@ -3,14 +3,20 @@
 	"version": "1.0.0",
 	"description": "Hilscher CifX Driver Wrapper for NodeJS",
 	"keywords": [
-		"nodejs",
-		"typescript",
 		"cifx",
 		"hilscher",
 		"profinet",
 		"ethercat",
-		"brofibus",
-		"industrialethernet"
+		"profibus",
+		"modbus",
+		"sercos",
+		"varan",
+		"canopen",
+		"cc-link",
+		"devicenet",
+		"powerlink",
+		"ethernet",
+		"cc-link ie"
 	],
 	"repository": {
 		"type": "git",
