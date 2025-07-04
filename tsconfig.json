@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"strict": true,
+		"typeRoots": [
+			"node_modules/@types"
+		],
+		"moduleResolution": "node",
+		"types": [
+			"node"
+		]
+	},
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

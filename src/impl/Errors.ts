@@ -482,7 +482,7 @@ const map = {
 	[CIFX_DEV_BUS_STATE_OFF_TIMEOUT]: "CIFX_DEV_BUS_STATE_OFF_TIMEOUT"
 }
 
-const getErrorDescription = CIFX_LIB.func("xDriverGetErrorDescription", "int", ["int", koffi.out("char*"), "int"]);
+const getErrorDescription = CIFX_LIB.func("xDriverGetErrorDescription", "int32", ["int32", koffi.out("char*"), "uint32"]);
 
 export class CifXError extends Error {
 
@@ -491,7 +491,7 @@ export class CifXError extends Error {
 
 	constructor(message: string, public code: number) {
 		super(message);
-		this.errorName = map[code >>> 0] || "UnknownError";
+		this.errorName = map[code >>> 0 as keyof typeof map] || "UnknownError";
 		this.description = this.getErrorDescription();
 	}
 

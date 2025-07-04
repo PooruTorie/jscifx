@@ -15,6 +15,8 @@ export type CifX = {
 	closeChannel: KoffiFunction
 	ioWrite: KoffiFunction
 	ioRead: KoffiFunction
+	updateHostState: KoffiFunction
+	updateBusState: KoffiFunction
 };
 
 export const CIFXHANDLE = koffi.pointer("void");
@@ -23,10 +25,10 @@ export const DRIVER_INFORMATION = koffi.struct("DRIVER_INFORMATION", {
 	driverVersion: "char[32]",
 	boardCount: "uint32",
 });
-export type DRIVER_INFORMATION = Partial<{
+export type DRIVER_INFORMATION = {
 	driverVersion: string,
 	boardCount: number,
-}>;
+};
 const SYSTEM_INFORMATION = koffi.struct("SYSTEM_INFORMATION", {
 	cookie: "uint8[4]",
 	ulDpmTotalSize: "uint32",
@@ -46,7 +48,7 @@ const SYSTEM_INFORMATION = koffi.struct("SYSTEM_INFORMATION", {
 	bReserved: "uint8",
 	usReserved: "uint16",
 });
-export type SYSTEM_INFORMATION = Partial<{
+export type SYSTEM_INFORMATION = {
 	abCookie: [number, number, number, number],
 	ulDpmTotalSize: number,
 	ulDeviceNumber: number,
@@ -64,7 +66,7 @@ export type SYSTEM_INFORMATION = Partial<{
 	bDevIdNumber: number,
 	bReserved: number,
 	usReserved: number,
-}>;
+};
 export const BOARD_INFORMATION = koffi.struct("BOARD_INFORMATION", {
 	error: "int32",
 	name: "char[16]",
@@ -78,7 +80,7 @@ export const BOARD_INFORMATION = koffi.struct("BOARD_INFORMATION", {
 	dualPortMemory: "uint32",
 	systemInfo: SYSTEM_INFORMATION
 });
-export type BOARD_INFORMATION = Partial<{
+export type BOARD_INFORMATION = {
 	error: number,
 	name: string,
 	alias: string,
@@ -90,7 +92,7 @@ export type BOARD_INFORMATION = Partial<{
 	channelCount: number,
 	dualPortMemory: number,
 	systemInfo: SYSTEM_INFORMATION
-}>;
+};
 export const CHANNEL_INFORMATION = koffi.struct("CHANNEL_INFORMATION", {
 	abBoardName: "char[16]",
 	abBoardAlias: "char[16]",
@@ -120,7 +122,7 @@ export const CHANNEL_INFORMATION = koffi.struct("CHANNEL_INFORMATION", {
 	ulHostCOSFlags: "uint32",
 	ulDeviceCOSFlags: "uint32",
 });
-export type CHANNEL_INFORMATION = Partial<{
+export type CHANNEL_INFORMATION = {
 	abBoardName: string,
 	abBoardAlias: string,
 	ulDeviceNumber: number,
@@ -148,9 +150,7 @@ export type CHANNEL_INFORMATION = Partial<{
 	ulHostFlags: number,
 	ulHostCOSFlags: number,
 	ulDeviceCOSFlags: number,
-}>;
-
-export const CIFX_IO_WAIT_TIMEOUT = 40;
+};
 
 function loadFunctions(): CifX {
 	let functions: CifX = {
@@ -163,6 +163,8 @@ function loadFunctions(): CifX {
 		closeChannel: CIFX_LIB.func("xChannelClose", "int32", [CIFXHANDLE]),
 		ioWrite: CIFX_LIB.func("xChannelIOWrite", "int32", [CIFXHANDLE, "uint32", "uint32", "uint32", "uint8*", "uint32"]),
 		ioRead: CIFX_LIB.func("xChannelIORead", "int32", [CIFXHANDLE, "uint32", "uint32", "uint32", koffi.out("uint8*"), "uint32"]),
+		updateHostState: CIFX_LIB.func("xChannelHostState", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"]),
+		updateBusState: CIFX_LIB.func("xChannelBusState", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"])
 	};
 
 	if (CURRENT_PLATFORM === "linux") {

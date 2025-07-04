@@ -13,12 +13,12 @@
 		"test": "jest --config jest.config.ts"
 	},
 	"author": "Paul Triebel",
-	"license": "ISC",
+	"license": "MIT",
 	"devDependencies": {
 		"@parcel/packager-ts": "^2.15.4",
 		"@parcel/transformer-typescript-types": "^2.15.4",
 		"@types/jest": "^30.0.0",
-		"@types/node": "^24.0.7",
+		"@types/node": "^22.16.0",
 		"jest": "^29.7.0",
 		"parcel": "^2.15.4",
 		"ts-jest": "^29.4.0",
