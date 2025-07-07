@@ -21,7 +21,7 @@ export type CifX = {
 
 export const CIFXHANDLE = koffi.pointer("void");
 export type CIFXHANDLE = any[];
-export const DRIVER_INFORMATION = koffi.struct("DRIVER_INFORMATION", {
+export const DRIVER_INFORMATION = koffi.pack("DRIVER_INFORMATION", {
 	driverVersion: "char[32]",
 	boardCount: "uint32",
 });
@@ -29,7 +29,7 @@ export type DRIVER_INFORMATION = {
 	driverVersion: string,
 	boardCount: number,
 };
-const SYSTEM_INFORMATION = koffi.struct("SYSTEM_INFORMATION", {
+const SYSTEM_INFORMATION = koffi.pack("SYSTEM_INFORMATION", {
 	cookie: "uint8[4]",
 	ulDpmTotalSize: "uint32",
 	ulDeviceNumber: "uint32",
@@ -67,7 +67,7 @@ export type SYSTEM_INFORMATION = {
 	bReserved: number,
 	usReserved: number,
 };
-export const BOARD_INFORMATION = koffi.struct("BOARD_INFORMATION", {
+export const BOARD_INFORMATION = koffi.pack("BOARD_INFORMATION", {
 	error: "int32",
 	name: "char[16]",
 	alias: "char[16]",
@@ -93,7 +93,7 @@ export type BOARD_INFORMATION = {
 	dualPortMemory: number,
 	systemInfo: SYSTEM_INFORMATION
 };
-export const CHANNEL_INFORMATION = koffi.struct("CHANNEL_INFORMATION", {
+export const CHANNEL_INFORMATION = koffi.pack("CHANNEL_INFORMATION", {
 	abBoardName: "char[16]",
 	abBoardAlias: "char[16]",
 	ulDeviceNumber: "uint32",
