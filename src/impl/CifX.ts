@@ -17,6 +17,8 @@ export type CifX = {
 	ioRead: KoffiFunction
 	updateHostState: KoffiFunction
 	updateBusState: KoffiFunction
+	resetChannel: KoffiFunction
+	lockConfig: KoffiFunction
 };
 
 export const CIFXHANDLE = koffi.pointer("void");
@@ -164,7 +166,9 @@ function loadFunctions(): CifX {
 		ioWrite: CIFX_LIB.func("xChannelIOWrite", "int32", [CIFXHANDLE, "uint32", "uint32", "uint32", "uint8*", "uint32"]),
 		ioRead: CIFX_LIB.func("xChannelIORead", "int32", [CIFXHANDLE, "uint32", "uint32", "uint32", koffi.out("uint8*"), "uint32"]),
 		updateHostState: CIFX_LIB.func("xChannelHostState", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"]),
-		updateBusState: CIFX_LIB.func("xChannelBusState", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"])
+		updateBusState: CIFX_LIB.func("xChannelBusState", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"]),
+		resetChannel: CIFX_LIB.func("xChannelReset", "int32", [CIFXHANDLE, "uint32", "uint32"]),
+		lockConfig: CIFX_LIB.func("xChannelConfigLock", "int32", [CIFXHANDLE, "uint32", koffi.out(koffi.pointer("uint32")), "uint32"])
 	};
 
 	if (CURRENT_PLATFORM === "linux") {

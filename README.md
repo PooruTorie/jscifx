@@ -3,6 +3,7 @@
 A TypeScript/JavaScript API for controlling Hilscher CIFX cards.
 
 [![npm version](https://img.shields.io/npm/v/jscifx.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/jscifx)
+[![NPM Downloads](https://img.shields.io/npm/dw/jscifx?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/jscifx)
 [![GitHub issues](https://img.shields.io/github/issues/PooruTorie/jscifx.svg?style=for-the-badge&logo=github)](https://github.com/PooruTorie/jscifx/issues)
 [![GitHub stars](https://img.shields.io/github/stars/PooruTorie/jscifx.svg?style=for-the-badge&logo=github)](https://github.com/PooruTorie/jscifx/stargazers)
 [![GitHub contributors](https://img.shields.io/github/contributors/PooruTorie/jscifx.svg?style=for-the-badge&logo=github)](https://github.com/PooruTorie/jscifx/contributors)

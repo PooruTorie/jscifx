@@ -1,7 +1,7 @@
 import CifX_impl, {BOARD_INFORMATION, CHANNEL_INFORMATION, CIFXHANDLE, DRIVER_INFORMATION} from "./impl/CifX";
 import {CIFX_NO_ERROR, CifXError} from "./impl/Errors";
 import * as koffi from "koffi";
-import {CIFX_BUS_STATE, CIFX_HOST_STATE, CIFX_IO_WAIT_TIMEOUT, CIFX_UPDATE_STATE_WAIT_TIMEOUT} from "./impl/Consts";
+import {CIFX_BUS_STATE, CIFX_CONFIGURATION, CIFX_HOST_STATE, CIFX_IO_WAIT_TIMEOUT, CIFX_RESET, CIFX_UPDATE_STATE_WAIT_TIMEOUT} from "./impl/Consts";
 
 /**
  * The `CifX` class provides static methods to initialize, deinitialize, and interact with the CifX driver.
@@ -247,8 +247,6 @@ export class Board {
  */
 export class Channel {
 	private handle: CIFXHANDLE | null = null;
-	private _hostReady: boolean = false;
-	private _busOpen: boolean = false;
 
 	/**
 	 * Creates a new `Channel` instance.
@@ -265,22 +263,6 @@ export class Channel {
 	 */
 	get opened(): boolean {
 		return this.handle !== null;
-	}
-
-	/**
-	 * Indicates if the host is ready.
-	 * @returns {boolean} True if host is ready, false otherwise.
-	 */
-	get hostReady(): boolean {
-		return this._hostReady;
-	}
-
-	/**
-	 * Indicates if the bus is open.
-	 * @returns {boolean} True if bus is open, false otherwise.
-	 */
-	get busOpen(): boolean {
-		return this._busOpen;
 	}
 
 	/**
@@ -377,14 +359,13 @@ export class Channel {
 		if (this.busOpen) {
 			throw new CifXError("CifX bus already open.", 0);
 		}
-		if (!this._hostReady) {
+		if (!this.hostReady) {
 			throw new CifXError("CifX host not ready.", 0);
 		}
 		const ret = CifX_impl.updateBusState(this.handle, CIFX_BUS_STATE.CIFX_BUS_STATE_ON, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
 		if (ret != CIFX_NO_ERROR) {
 			throw new CifXError("CifX bus open failed", ret);
 		}
-		this._busOpen = true;
 	}
 
 	/**
@@ -398,14 +379,13 @@ export class Channel {
 		if (!this.busOpen) {
 			throw new CifXError("CifX bus not open.", 0);
 		}
-		if (!this._hostReady) {
+		if (!this.hostReady) {
 			throw new CifXError("CifX host not ready.", 0);
 		}
 		const ret = CifX_impl.updateBusState(this.handle, CIFX_BUS_STATE.CIFX_BUS_STATE_OFF, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
 		if (ret != CIFX_NO_ERROR) {
 			throw new CifXError("CifX bus close failed", ret);
 		}
-		this._busOpen = false;
 	}
 
 	/**
@@ -416,14 +396,13 @@ export class Channel {
 		if (!this.opened) {
 			throw new CifXError("CifX channel not opened.", 0);
 		}
-		if (this._hostReady) {
+		if (this.hostReady) {
 			throw new CifXError("CifX host already ready.", 0);
 		}
 		const ret = CifX_impl.updateHostState(this.handle, CIFX_HOST_STATE.CIFX_HOST_STATE_READY, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
 		if (ret != CIFX_NO_ERROR) {
 			throw new CifXError("CifX start host failed", ret);
 		}
-		this._hostReady = true;
 	}
 
 	/**
@@ -434,14 +413,85 @@ export class Channel {
 		if (!this.opened) {
 			throw new CifXError("CifX channel not opened.", 0);
 		}
-		if (!this._hostReady) {
+		if (!this.hostReady) {
 			throw new CifXError("CifX host not ready.", 0);
 		}
 		const ret = CifX_impl.updateBusState(this.handle, CIFX_HOST_STATE.CIFX_HOST_STATE_NOT_READY, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
 		if (ret != CIFX_NO_ERROR) {
 			throw new CifXError("CifX stop host failed", ret);
 		}
-		this._hostReady = false;
+	}
+
+	reset(mode: CIFX_RESET) {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		const ret = CifX_impl.resetChannel(this.handle, mode, 0);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX reset failed", ret);
+		}
+	}
+
+	lockConfig() {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		if (this.configLocked) {
+			throw new CifXError("CifX config is locked.", 0);
+		}
+		const ret = CifX_impl.lockConfig(this.handle, CIFX_CONFIGURATION.CIFX_CONFIGURATION_LOCK, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX lock config failed", ret);
+		}
+	}
+
+	unlockConfig() {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		if (!this.configLocked) {
+			throw new CifXError("CifX config is not locked.", 0);
+		}
+		const ret = CifX_impl.lockConfig(this.handle, CIFX_CONFIGURATION.CIFX_CONFIGURATION_UNLOCK, [null], CIFX_UPDATE_STATE_WAIT_TIMEOUT);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX unlock config failed", ret);
+		}
+	}
+
+	get configLocked(): boolean {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		let state = [null]
+		const ret = CifX_impl.lockConfig(this.handle, CIFX_CONFIGURATION.CIFX_CONFIGURATION_GETLOCKSTATE, state, 0);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX get config lock state failed", ret);
+		}
+		return state[0] == CIFX_CONFIGURATION.CIFX_CONFIGURATION_LOCK;
+	}
+
+	get hostReady(): boolean {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		let state = [null]
+		const ret = CifX_impl.updateHostState(this.handle, CIFX_HOST_STATE.CIFX_HOST_STATE_READ, state, 0);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX get host state failed", ret);
+		}
+		return state[0] == CIFX_HOST_STATE.CIFX_HOST_STATE_READY;
+	}
+
+	get busOpen(): boolean {
+		if (!this.opened) {
+			throw new CifXError("CifX channel not opened.", 0);
+		}
+		let state = [null]
+		const ret = CifX_impl.updateBusState(this.handle, CIFX_BUS_STATE.CIFX_BUS_STATE_GETSTATE, state, 0);
+		if (ret != CIFX_NO_ERROR) {
+			throw new CifXError("CifX get bus state failed", ret);
+		}
+		return state[0] == CIFX_BUS_STATE.CIFX_BUS_STATE_ON;
 	}
 
 	/**
