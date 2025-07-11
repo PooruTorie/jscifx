@@ -15,14 +15,26 @@ test('Test CifX Driver', () => {
 		const channel = board.getChannel(0);
 		channel.open();
 		channel.reset(CIFX_RESET.CIFX_SYSTEMSTART);
-		channel.startHost();
-		channel.lockConfig();
-		channel.openBus();
+		if (!channel.hostReady) {
+			channel.startHost();
+		}
+		if (!channel.configLocked) {
+			channel.lockConfig();
+		}
+		if (!channel.busOpen) {
+			channel.openBus();
+		}
 		channel.ioWrite(0, 0, Buffer.from([0x01, 0x02, 0x03, 0x04]));
 		console.log("Channel:", channel.ioRead(0, 0, 4));
-		channel.closeBus();
-		channel.unlockConfig();
-		channel.stopHost();
+		if (channel.busOpen) {
+			channel.closeBus();
+		}
+		if (channel.configLocked) {
+			channel.unlockConfig();
+		}
+		if (channel.hostReady) {
+			channel.stopHost();
+		}
 		channel.close();
 		driver.close();
 		CifX.deinit();
