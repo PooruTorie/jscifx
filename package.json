@@ -1,6 +1,6 @@
 {
 	"name": "jscifx",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Hilscher CifX Driver Wrapper for NodeJS",
 	"keywords": [
 		"cifx",
