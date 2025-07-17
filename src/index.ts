@@ -341,7 +341,7 @@ export class Channel {
 			throw new CifXError("CifX io data cannot be empty.", 0);
 		}
 		const data = Buffer.alloc(dataLength);
-		const ret = CifX_impl.ioWrite(this.handle, areaNumber, offset, data.length, data, timeout);
+		const ret = CifX_impl.ioRead(this.handle, areaNumber, offset, data.length, data, timeout);
 		if (ret != CIFX_NO_ERROR) {
 			throw new CifXError("CifX io read failed", ret);
 		}
